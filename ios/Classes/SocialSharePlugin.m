@@ -88,7 +88,14 @@
             // This call is iOS 10+, can use 'setItems' depending on what versions you support
             [[UIPasteboard generalPasteboard] setItems:@[pasteboardItems] options:pasteboardOptions];
 
-            [[UIApplication sharedApplication] openURL:urlScheme options:@{} completionHandler:nil];
+                [[UIApplication sharedApplication] openURL:urlScheme options:@{} completionHandler:^(BOOL success) {
+                    if (success) {
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+                            pasteboard.string = attributionURL;
+                        });
+                    }
+                }];
               result(@"success");
             } else {
                 result(@"error");
